@@ -26,23 +26,44 @@ done
 printf "\ndone\n"
 
 echo "Extracting Result"
-printf "" > numsol.res
+printf "" > numsol.csv
+
+STR="\"ScaleFactors\""
+for num in $( seq $SFF $SFE )
+do
+	STR=`printf "%s , %d" "$STR" "$num"`
+done
+echo "$STR" >> numsol.csv 
+
 for line in $( seq 1 $MAXL )
 do
 	printf "\rline %3d/%3d" $line $MAXL
-	STR=""
+	STR="$line"
 	for num in $( seq $SFF $SFE )
 	do
-		if [ "$num" != "$SFF" ]
-		then 
-			STR=`printf "%s , " "$STR" `
-		fi
 		PROB=`awk -v LINE=$line 'NR==LINE{print}' numsol.$num.tmp | awk '{print $4}'`
-		STR=`printf "%s %s " "$STR" "$PROB"`
+		STR=`printf "%s , %s " "$STR" "$PROB"`
 	done
-	echo "$STR" >> numsol.res
+	echo "$STR" >> numsol.csv
 done
 printf "\ndone\n"
 
 echo "Removing numsol.*.tmp"
 rm numsol.*.tmp
+
+# Generate Plotting File
+
+printf "" > numsol.plot
+echo "set datafile separator \",\""             >> numsol.plot
+echo "set key autotitle columnhead"             >> numsol.plot
+echo "set title 'Prefill vs. Scale-Factor'"     >> numsol.plot
+echo "set yrange [0:]"                  >> numsol.plot
+echo "set term png"                             >> numsol.plot
+echo "set output 'numsol.png'"                  >> numsol.plot
+
+STR="plot 'numsol.csv' "
+for num in $( seq $SFF $SFE )
+do
+	STR=`printf "%s , \'\' using 1:%d with lines " "$STR" "$num"`
+done
+echo "$STR" >> numsol.plot 
