@@ -7,9 +7,6 @@ typedef mp::number<mp::backends::cpp_int_backend<>, mp::et_off>       int_mp;
 typedef mp::number<mp::cpp_rational_backend, mp::et_off>    rational_mp;
 typedef mp::number<mp::cpp_dec_float<0>, mp::et_off>        float_mp;  // 0 means 'unlimited'
 
-
-
-
 /*--------------------------------------------------------------------------------------
 
 In-Tile load 
